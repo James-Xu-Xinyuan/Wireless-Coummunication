@@ -1,0 +1,120 @@
+% wirless comm coursework 1
+% xx316, Xinyuan Xu, 2020 Jan
+% uncoded QPSK transmission over a SIMO i.i.d Rayleigh fading channel
+% with MRC and two receive antennas
+clear all;
+%define constellation diagram
+c00 = 1/sqrt(2)*(+1+1i); 
+c01 = 1/sqrt(2)*(-1+1i); 
+c11 = 1/sqrt(2)*(-1-1i); 
+c10 = 1/sqrt(2)*(+1-1i);
+
+L = 10^6; 
+BitStream = round(rand(L,1)); 
+% a random bit stream of 0 and 1 
+
+c = zeros(L/2,1);
+for j =1:length(c)
+    if BitStream(2*j-1)==0
+        if BitStream(2*j)==0
+            c(j)=c00;
+        else
+            c(j)=c01;
+        end
+    else
+        if BitStream(2*j)==0
+            c(j)=c10;
+        else
+            c(j)=c11;
+        end
+    end
+end
+
+%assume normalized noise: variance of n is 1
+%average SNR = Es/var(n) = Es numerically
+BER = zeros(1,201);
+SNRdB = 0:0.1:20;
+SNRout = zeros(1,201);
+Nr = 2;
+%iterate for each SNR value
+for j = 1:201
+    Es = db2pow(SNRdB(j)); 
+    % generate iid channel and noise
+    h = 1/(sqrt(2))*(randn(2,L/2)+1i*randn(2,L/2));
+    n = 1/(sqrt(2))*(randn(2,L/2)+1i*randn(2,L/2));
+    h_mag = zeros(1,L/2);
+%     y = sqrt(Es)*h.*c+n; % simulated received signal
+    y = zeros(2,L/2);
+    for m = 1:L/2
+        %find magnitude of channel for later SNRout calculation
+        h_mag(m)=sqrt(h(:,m)'*h(:,m)); 
+        y(:,m)= sqrt(Es)*c(m).*h(:,m)+n(:,m);
+    end
+    % maximal ratio combining
+    g = h';   %combiner
+    z = zeros(L/2,1);
+    for m = 1:L/2
+        z(m)= g(m,:)*y(:,m);
+    end
+%     z = y*g;%assume the channel h is perfectly known at receiver
+
+    ReceivedBits = zeros(L,1);
+    % demodulation
+    for k = 1:length(y)
+        if imag(z(k))>0
+            ReceivedBits(k*2-1) = 0;
+        else
+            ReceivedBits(k*2-1) = 1;
+        end
+        if real(z(k))>0
+            ReceivedBits(2*k) = 0;
+        else
+            ReceivedBits(2*k) = 1;
+        end
+    end
+    %calculate bit error rate
+    diff = mod(BitStream+ReceivedBits,2);
+    ber = sum(diff)/L;
+    BER(j) = ber;
+    %calcuate output SNR
+    SNRout(j)=mean(h_mag.^2)*Es;
+end
+
+figure
+plot(SNRdB, log10(BER))
+xlabel('SNR in dB')
+ylabel('log10(BER) (Bit Error Rate)')
+title('Uncoded QPSK - SIMO i.i.d Rayleigh fading channel, MRC, Nr=2')
+
+figure
+gd = -log2(BER)./log2(db2pow(SNRdB));
+plot(SNRdB,gd)
+hold on
+xlabel('SNR in dB')
+ylabel('g_d(SNR)')
+title('Diversity Gain; SIMO MRC')
+
+figure
+SNR = db2pow(SNRdB);
+plot(SNRdB,10*log10(SNRout))
+hold on
+SNRout_theoretical = SNR*Nr;
+plot(SNRdB,10*log10(SNRout_theoretical))
+legend('Experiment','Theory')
+xlabel('SNR in dB')
+ylabel('SNRout in dB')
+title('SNRout; SIMO MRC')
+
+figure
+ArrayGain = SNRout./SNR;
+ArrayGain_theoretical = ones(201,1)*2;
+plot(SNRdB,ArrayGain)
+hold on
+plot(SNRdB,ArrayGain_theoretical)
+ylim([1.99,2.01])
+xlabel('SNR in dB')
+ylabel('Array Gain')
+legend('Experiment','Theory')
+title('Array Gain; SIMO MRC')
+
+save('SIMO','BER','SNRout')
