@@ -9,21 +9,34 @@ LT_SINR = zeros(N,1);
 
 rng('default')
 for k = 1:N
+    % user coordinate
+    theta_i = rand(1,1)*2*pi;
+    ri = (rand*(250-35)+35)/1000;
+    x = ri*cos(theta_i);
+    y = ri*sin(theta_i);
+    di = ri; %in km
+    
+    % interfering base station location
+    theta_j = [0,1,2,3,4,5]*(2*pi/6);
+    x_j = 500/1000*cos(theta_j);
+    y_j = 500/1000*sin(theta_j);
+    dj = zeros(6,1);
+    
+    for j = 1:6
+        dj(j) = sqrt((x_j(j)-x)^2+(y_j(j)-y)^2);
+    end
+    
     % pretend A doesnt have the horizontal bar - path loss
-    dj = 500/1000; %cell radius in kilometer, fixed
     A0j_dB = 128.1+37.6*log10(dj); 
     Sj_dB = randn(6,1)*8; % 6 interfering cells     % std of 8dB
     Aj = db2pow(A0j_dB+Sj_dB);% pass loss + shadowing
     
-    di = (rand*(250-35)+35)/1000; % uniform random user distance, in km
     A0i_dB = 128.1+37.6*log10(di);
     Si_dB = randn*8; % user cell shadowing     % std of 8dB
     Ai = db2pow(A0i_dB+Si_dB); % pass loss + shadowing
     
-    % Es = 46dBm
-    Es = 1*10^(-3)*10^(46/10);
-    % noise variance = -176dBm
-    Pn = 1*10^(-3)*10^(-174/10); 
+    Es = 1*10^(-3)*10^(46/10);      % Es = 46dBm
+    Pn = 1*10^(-3)*10^(-174/10);    % noise variance = -174dBm
     % the noise level is super low ?
 
     LT_SINR(k)=SINR_LT(Ai,Aj,Es, Pn);
