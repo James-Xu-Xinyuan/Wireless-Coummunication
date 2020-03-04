@@ -40,4 +40,6 @@ xlim([-50,50])
 
 mean(LT_SINR_dB)
 std(LT_SINR_dB)
+% One-sample Kolmogorov-Smirnov test
+h = kstest(LT_SINR) % logical 1
 
