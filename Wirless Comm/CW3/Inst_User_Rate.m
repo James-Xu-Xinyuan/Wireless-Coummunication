@@ -57,6 +57,7 @@ function CQI = Inst_User_Rate(H, Ai,Aj,Pn, Ptx)
                 g(2,:) = zeros(size(g(1,:)));
             else
                 g(2,:) = Ai^(-1/2)*(Hqi*P(:,2))'*inv(Rni(:,:,2));
+%                 Warning: Matrix is close to singular or badly scaled. Results may be inaccurate. RCOND =  3.783505e-18. 
             end
 
             % SINR

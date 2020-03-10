@@ -1,14 +1,16 @@
 % testing proportional fair scheduling
 % main objective: to find out how long the drop needs to be
 clear all
-nr = 1; % 1 or 2
+nr = 2; % 1 or 2
 nt = 4;
 Ptx = 1*10^(-3)*10^(46/10); % 39.8107      
 Pn = 1*10^(-3)*10^(-174/10);    
 K = 10; 
 J =6;
-T = 10^4;  
-tc = 1000; % from online search, mim scheduling period is 1ms
+T = 6*10^4;  
+tc = 5000; 
+% from online search, mim scheduling period is 1ms
+% if tc=1k, T>5000 is needed.
 t = 0.5; % space correlation
 epsilon = 0.85;% time correlation
 
@@ -65,11 +67,12 @@ for t = 1:T
 
 
 end
-
+figure
 for k = 1:K
     plot(R_avg(k,:))
     hold on
 end
 % conclusion: 5000 should be enough for nr = 2 or 1
+% Tested if tc = 100, nt = 1 or 2, T=600 is enough
 
     

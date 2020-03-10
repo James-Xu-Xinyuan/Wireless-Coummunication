@@ -1,4 +1,4 @@
-function [di,dj,Rt]=DropUser(t)
+function [di,dj,Rt]=DropUser(t,K)
 % [Ai,Aj]=DropUser(10,6)
 % pass loss + shadowing
 % di: K x 1 vector
@@ -6,9 +6,11 @@ function [di,dj,Rt]=DropUser(t)
 % K : number of users in cells
 % J : number of interfering cells
 % t : % baseline spatial correlation magnitude
-    K = 10;
+    if nargin < 2
+        K = 10;
+    end
     J = 6;
-    t = 0.5; % baseline spatial correlation magnitude
+%     t = 0.5; % baseline spatial correlation magnitude
 %     rng('default')
     
     % user coordinate
@@ -21,7 +23,7 @@ function [di,dj,Rt]=DropUser(t)
     theta_j = [0,1,2,3,4,5]*(2*pi/6);
     x_j = 500/1000*cos(theta_j);
     y_j = 500/1000*sin(theta_j);
-    dj = zeros(10,6);
+    dj = zeros(K,J);
     
     for q = 1:K
         for j = 1:J
