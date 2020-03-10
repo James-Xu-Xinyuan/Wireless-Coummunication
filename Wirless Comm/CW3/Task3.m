@@ -73,4 +73,6 @@ end
 
 Rate_average = reshape(Rate_average,K*NoDrop,1);
 cdfplot(Rate_average)
+kstest(Rate_average) % logic one
+
 
