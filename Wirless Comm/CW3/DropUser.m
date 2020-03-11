@@ -1,4 +1,4 @@
-function [di,dj,Rt]=DropUser(t,K)
+function [Ai,Aj,Rt]=DropUser(t,K)
 % [Ai,Aj]=DropUser(10,6)
 % pass loss + shadowing
 % di: K x 1 vector
@@ -51,12 +51,12 @@ function [di,dj,Rt]=DropUser(t,K)
     end
     
         
-%     % pretend A doesnt have the horizontal bar - path loss
-%     A0j_dB = 128.1+37.6*log10(d); 
-%     Sj_dB = randn(K,J)*8;   % std of 8dB
-%     Aj = db2pow(A0j_dB+Sj_dB);% pass loss + shadowing
-%     
-%     A0i_dB = 128.1+37.6*log10(ri);
-%     Si_dB = randn(K,1)*8; % user cell shadowing     % std of 8dB
-%     Ai = db2pow(A0i_dB+Si_dB); % pass loss + shadowing
+    % pretend A doesnt have the horizontal bar - path loss
+    A0j_dB = 128.1+37.6*log10(dj); 
+    Sj_dB = randn(K,J)*8;   % std of 8dB
+    Aj = db2pow(A0j_dB+Sj_dB);% pass loss + shadowing
+    
+    A0i_dB = 128.1+37.6*log10(di);
+    Si_dB = randn(K,1)*8; % user cell shadowing     % std of 8dB
+    Ai = db2pow(A0i_dB+Si_dB); % pass loss + shadowing
 

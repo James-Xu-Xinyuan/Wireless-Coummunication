@@ -1,12 +1,11 @@
 % Xinyuan Xu
 % Wireless Commm 2020
-% Task 5
+% Task 5 - time correlation part
 
 clear all
 load Codebook.mat
 NoDrop = 30; 
-T = 600; % number of time instances per drop
-% tested in testground 4; long enough for this task
+T = 300; 
 nr = 2; % receive antenna 
 nt = 4; % transmit antenna
 K = 10; % number of users in cell
@@ -14,7 +13,7 @@ J = 6; % number of interfering cells
 Ptx = 1*10^(-3)*10^(46/10); % 39.8107      
 Pn = 1*10^(-3)*10^(-174/10); % 3.9811e-21 ? is it too small?     
 t_space = 0.5; % space correlation
-tc = 100;
+tc = 50; 
 
 Epsilons = [0.02,0.18,0.45,0.72,0.98]; % time correlation
 
@@ -27,31 +26,23 @@ for counter=1:5
     
     R_avg = zeros(K,T);
     scheduled_user = zeros(T,1);
-%     R_test = zeros(T+1,1) ;
 
     for k =1:K
         R_avg(k,1) = 10^(-12); 
     end
     
     for drop = 1:NoDrop
-        [di,dj,Rt]=DropUser(t_space);  
-        A0j_dB = 128.1+37.6*log10(dj); 
-        A0i_dB = 128.1+37.6*log10(di);
+        [Ai,Aj,Rt]=DropUser(t_space);  
         H_tilt = sqrt(0.5)*(randn(nr,nt, K,J+1)+1i*randn(nr,nt, K,J+1));
         H = zeros(nr,nt, K,J+1);
     
         for t = 1:T
-            Sj_dB = randn(K,J)*8;   
-            Si_dB = randn(K,1)*8; 
-            Aj = db2pow(A0j_dB+Sj_dB);
-            Ai = db2pow(A0i_dB+Si_dB); 
-
             N = 1/sqrt(2)*(randn(nr,nt,K,J+1)+1i*randn(nr,nt,K,J+1));
             H_tilt = epsilon*H_tilt + sqrt(1-epsilon^2)*N;
         
             for k = 1:K
                 for j = 1:J+1
-                    H(:,:,k,j) = H_tilt(:,:,k,j)*Rt(:,:,k,j);
+                    H(:,:,k,j) = H_tilt(:,:,k,j)*Rt(:,:,k,j)^(1/2);
                 end
             end
         
@@ -78,17 +69,8 @@ for counter=1:5
     toc
 end
 
-save('Task5','Rate_average')
+save('Task5_time','Rate_average')
 title("CDF of user average rate")
 xlabel("x = user average rate (b/s/Hz)")
 ylabel("F(x) - CDF")
 legend("\epsilon=0.02","\epsilon=0.18","\epsilon=0.45","\epsilon=0.72","\epsilon=0.98")
-
-% Elapsed time is 752.454472 seconds.
-% Elapsed time is 679.568915 seconds.
-% Elapsed time is 706.312207 seconds.
-% Elapsed time is 708.883365 seconds.
-% Elapsed time is 752.681832 seconds.
-
-%  warning ('off','all');
-
