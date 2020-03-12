@@ -4,18 +4,18 @@
 
 clear all
 load Codebook.mat
-T = 60;     tc = 10;
+T = 300;     tc = 50;
 nr = 2;      nt = 4; 
 J = 6;       K =10;  
 Ptx = 1*10^(-3)*10^(46/10); % 39.8107      
 Pn = 1*10^(-3)*10^(-174/10); % 3.9811e-21 
 epsilon = 0.85;%
 NoDrop = 30;
-Rate_average = zeros(K,NoDrop,5);
-SpaceCorrelation = [0.1,0.3,0.5,0.7,0.9]; 
+Rate_average = zeros(K,NoDrop,4);
+SpaceCorrelation = [0,0.5,0.9,0.999]; 
 
 figure
-for counter=1:5
+for counter=1:4
     tic
     t_space = SpaceCorrelation(counter);
     
@@ -27,18 +27,19 @@ for counter=1:5
     end
     
     for drop = 1:NoDrop
-        [di,dj,Rt]=DropUser(t_space,K);  
-        A0j_dB = 128.1+37.6*log10(dj); 
-        A0i_dB = 128.1+37.6*log10(di);
+        [Ai,Aj,Rt]=DropUser(t_space,K);  
+        
+        for user = 1:K
+            for BS = 1:J+1
+                Rt(:,:,user,BS)=Rt(:,:,user,BS)/norm(Rt(:,:,user,BS));
+            end
+        end
+        % normalize Rt matrix; this proved to let cdf graph make much more sense
+        
         H_tilt = sqrt(0.5)*(randn(nr,nt, K,J+1)+1i*randn(nr,nt, K,J+1));
         H = zeros(nr,nt, K,J+1);
     
         for k = 1:T % increment of time index k
-            Sj_dB = randn(K,J)*8;   
-            Si_dB = randn(K,1)*8; 
-            Aj = db2pow(A0j_dB+Sj_dB);
-            Ai = db2pow(A0i_dB+Si_dB); 
-
             N = 1/sqrt(2)*(randn(nr,nt,K,J+1)+1i*randn(nr,nt,K,J+1));
             H_tilt = epsilon*H_tilt + sqrt(1-epsilon^2)*N;
         
@@ -75,4 +76,4 @@ save('Task6','Rate_average')
 title("CDF of user average rate")
 xlabel("x = user average rate (b/s/Hz)")
 ylabel("F(x) - CDF")
-legend("t=0.1","t=0.3","t=0.5","t=0.7","t=0.9")
+legend("t-space=0","t-space=0.5","t-space=0.9","t-space=0.999")

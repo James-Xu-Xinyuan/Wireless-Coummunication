@@ -16,13 +16,13 @@ epsilon = 0.85;% time correlation
 
 % tcs = [2,10,100,1000];
 % Ts = [100,100,600,6000];
-tcs = [2,10,100,200,1000];
-Ts = [100,100,600,1200,6000];
+tcs = [2,10,100,1000];
+Ts = [100,100,600,6000];
 
-Rate_average = zeros(K,NoDrop,5);
+Rate_average = zeros(K,NoDrop,4);
 
 figure
-for counter=1:5
+for counter=1:4
     tic
     tc = tcs(counter);
     T = Ts(counter);
@@ -76,7 +76,7 @@ save('Task4','Rate_average')
 title("CDF of user average rate")
 xlabel("x = user average rate (b/s/Hz)")
 ylabel("F(x) - CDF")
-legend("tc=2","tc=10","tc=20","tc=100","tc=200")
+legend("tc=2","tc=10","tc=100","tc=1000")
 
 % Elapsed time is 111.107887 seconds.
 % Elapsed time is 110.564017 seconds.

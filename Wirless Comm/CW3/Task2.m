@@ -51,8 +51,8 @@ ylabel("F(x) - CDF")
 xlim([-50,50])
 % normal distribution of long term SINR
 
-mean(LT_SINR_dB)
-std(LT_SINR_dB)
+mean(LT_SINR_dB) % 8.5021
+std(LT_SINR_dB) % 12.9602
 % One-sample Kolmogorov-Smirnov test
 h = kstest(LT_SINR) % logical 1
 
