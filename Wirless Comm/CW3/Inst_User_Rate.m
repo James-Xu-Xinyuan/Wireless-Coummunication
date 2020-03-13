@@ -13,14 +13,19 @@ function CQI = Inst_User_Rate(H, Ai,Aj,Pn, Ptx)
         ri = round(rand+1);
         pmi = round(15*rand);    
         if ri == 1
-            P_cell(:,1,j) = W1(:,:,pmi+1);
+            P_cell(:,1,j) = W1(:,:,pmi+1)*Ptx^(0.5);;
         else
-            P_cell(:,:,j) = W2(:,:,pmi+1);
+            P_cell(:,:,j) = W2(:,:,pmi+1)*[Ptx 0 ; 0 Ptx]^(0.5);
+            % precoder already divided by 1/sqrt(2) in codebook
         end
     end
+    
+    % P1 = W1(:,:,1)*Ptx^(0.5)
+    % trace(P1'*P1)
+    % P2 = W2(:,:,1)*[Ptx 0 ; 0 Ptx]^(0.5)
+    % trace(P2'*P2) = 39.8107 = Ptx
 
     Rate = zeros(2,16);
-
     % try all the precoder
     for RI = 1:2
         for PMI = 0:15
@@ -28,14 +33,10 @@ function CQI = Inst_User_Rate(H, Ai,Aj,Pn, Ptx)
             Rni(:,:,1) = Pn*eye(nr,nr); % noise term
             Rni(:,:,2) = Pn*eye(nr,nr);
             if RI == 1  % no interstream interference: there is only 1 stream!
-                P = W1(:,:,PMI+1)*Ptx; 
+                P = W1(:,:,PMI+1)*Ptx^(0.5); 
                 % matlab counts 1-16, standard counst 0-15
-                % norm(P) = Ptx; used above and below to check power contraint
             else
-                P = W2(:,:,PMI+1)*[Ptx 0 ; 0 Ptx]; 
-                % the uniform power allocation 
-                % precoder already divided by 1/sqrt(2) in codebook
-                % so S = I2*Ptx;
+                P = W2(:,:,PMI+1)*[Ptx 0 ; 0 Ptx]^(0.5); 
                 % coursework specific, assume at max 2 streams
                 % so only add 1 interference stream
                 Rni(:,:,1) = Rni(:,:,1) + 1/Ai*Hqi*P(:,2)*(Hqi*P(:,2))';

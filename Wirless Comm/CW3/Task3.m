@@ -29,7 +29,6 @@ end
 figure
 for nr=1:2
     for drop = 1:NoDrop
-        tic
         [Ai,Aj,Rt]=DropUser(t_space);  
         H_tilt = sqrt(0.5)*(randn(nr,nt, K,J+1)+1i*randn(nr,nt, K,J+1));
         H = zeros(nr,nt, K,J+1);
@@ -59,7 +58,6 @@ for nr=1:2
         end
     
         Rate_average(:,drop,nr) = R_avg(:,T);
-        toc
     end
     
     DataPoints = reshape(Rate_average(:,:,nr),K*NoDrop,1);
@@ -79,7 +77,15 @@ UAR_Nr2 = reshape(Rate_average(:,:,2),300,1);
 % value in comment: tc=50 T=300 drop=30
 % 10s per drop for nr=1
 % 14s per drop for nr=2
-Mean_Nr1 = mean(UAR_Nr1)    % 1.6483
-Std_Nr1 = std(UAR_Nr1)      % 0.4680
-Mean_Nr2 = mean(UAR_Nr2)    % 2.8593
-Std_Nr2 = std(UAR_Nr2)      % 0.8390
+Mean_Nr1 = mean(UAR_Nr1)    % 0.6441
+Std_Nr1 = std(UAR_Nr1)      % 0.4112
+Mean_Nr2 = mean(UAR_Nr2)    % 0.9828
+Std_Nr2 = std(UAR_Nr2)      % 0.6833
+
+kstest(UAR_Nr1) % logical 1
+kstest(UAR_Nr2) % logical 1
+
+figure 
+histogram(UAR_Nr1)
+hold on
+histogram(UAR_Nr2)

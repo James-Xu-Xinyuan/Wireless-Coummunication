@@ -74,3 +74,9 @@ title("CDF of user average rate")
 xlabel("x = user average rate (b/s/Hz)")
 ylabel("F(x) - CDF")
 legend("\epsilon=0.02","\epsilon=0.18","\epsilon=0.45","\epsilon=0.72","\epsilon=0.98")
+
+% Elapsed time is 360.163425 seconds.
+% Elapsed time is 358.165257 seconds.
+% Elapsed time is 360.088401 seconds.
+% Elapsed time is 364.174029 seconds.
+% Elapsed time is 362.076315 seconds.
